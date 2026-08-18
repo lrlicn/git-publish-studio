@@ -69,6 +69,73 @@ button:active:not(:disabled) { transform: scale(.98); }
 .conflict-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; margin-left: auto; }
 .conflict-actions .primary-button { background: #b83a34; border-color: #d85a51; color: #fff; }
 .conflict-actions .primary-button:hover { background: #d04a42; }
+.repo-state { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border: 1px solid rgba(255,255,255,.14); border-radius: 999px; background: rgba(255,255,255,.06); color: #c5c6c8; font-size: 10px; font-weight: 700; }
+.repo-state.state-active { border-color: rgba(110,168,254,.34); background: rgba(110,168,254,.1); color: #a9c9ff; }
+.repo-state.state-sync { border-color: rgba(227,179,65,.36); background: rgba(227,179,65,.1); color: #f0ca73; }
+.repo-state.state-danger { border-color: rgba(248,81,73,.42); background: rgba(248,81,73,.12); color: #ff9d96; }
+.repo-state.state-success { border-color: rgba(46,160,100,.36); background: rgba(46,160,100,.11); color: #79d9ae; }
+.workflow-bar { margin: 12px 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: rgba(25,26,29,.94); box-shadow: var(--shadow); display: grid; grid-template-columns: minmax(220px, .9fr) minmax(320px, 1.3fr) auto; align-items: center; gap: 18px; }
+.workflow-heading { min-width: 0; display: grid; gap: 3px; }
+.workflow-heading .eyebrow { color: #77797d; font: 700 9px/1.2 Consolas, monospace; letter-spacing: .12em; }
+.workflow-heading strong { color: #f1f1f2; font-size: 14px; }
+.workflow-heading > span:last-child { overflow: hidden; color: #96979b; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.workflow-steps { min-width: 0; display: flex; align-items: center; }
+.workflow-step { min-width: 64px; color: #77797d; display: inline-flex; align-items: center; gap: 6px; font-size: 10px; white-space: nowrap; }
+.workflow-index { width: 23px; height: 23px; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; background: #202125; display: grid; place-items: center; color: #929397; font: 700 10px Consolas, monospace; }
+.workflow-step.active { color: #c8d9f5; }
+.workflow-step.active .workflow-index { border-color: #6ea8fe; background: rgba(110,168,254,.17); color: #c5dbff; box-shadow: 0 0 0 3px rgba(110,168,254,.08); }
+.workflow-step.complete { color: #9bdcbb; }
+.workflow-step.complete .workflow-index { border-color: rgba(46,160,100,.6); background: rgba(46,160,100,.2); color: #82d9ad; }
+.workflow-step.blocked { color: #ffaaa3; }
+.workflow-step.blocked .workflow-index { border-color: rgba(248,81,73,.55); background: rgba(248,81,73,.16); color: #ffaaa3; }
+.workflow-connector { height: 1px; flex: 1; min-width: 16px; margin: 0 8px; background: rgba(255,255,255,.13); }
+.workflow-next { min-width: 126px; white-space: nowrap; }
+.field-label-row { min-height: 22px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.text-button { min-height: 24px; padding: 0 6px; border: 1px solid transparent; border-radius: 4px; background: transparent; color: #9abcf0; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; }
+.text-button:hover { border-color: rgba(110,168,254,.3); background: rgba(110,168,254,.1); color: #c7dcff; }
+.text-button svg { width: 13px; }
+.field-hint { display: block; margin-top: 6px; color: #77797d; font-size: 10px; line-height: 1.45; }
+.commit-presets-dialog { width: min(480px, calc(100vw - 28px)); }
+.preset-list { padding: 12px; display: grid; gap: 6px; }
+.commit-preset { min-height: 52px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; background: #191a1d; color: #d9d9db; display: grid; grid-template-columns: 72px minmax(0, 1fr) 20px; align-items: center; gap: 10px; text-align: left; }
+.commit-preset:hover { border-color: rgba(110,168,254,.42); background: rgba(110,168,254,.09); }
+.commit-preset code { color: #9fc4ff; font: 700 12px Consolas, monospace; }
+.commit-preset span { min-width: 0; display: grid; gap: 2px; }
+.commit-preset strong { color: #e7e7e8; font-size: 11px; font-weight: 650; }
+.commit-preset small { color: #818388; font: 10px Consolas, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.commit-preset > svg { width: 15px; color: #8e9095; }
+.workspace-grid.workflow-view-settings .changes-panel,
+.workspace-grid.workflow-view-sync .changes-panel { display: none; }
+.workspace-grid.workflow-view-stage .action-panel { display: none; }
+.workspace-grid.workflow-view-stage .changes-panel { grid-column: 1 / -1; }
+.workspace-grid.workflow-view-settings .action-panel,
+.workspace-grid.workflow-view-sync .action-panel { grid-column: 1 / -1; max-width: 760px; }
+.workspace-grid.workflow-view-settings .action-panel .action-section:not([data-workflow-step="settings"]),
+.workspace-grid.workflow-view-sync .action-panel .action-section:not([data-workflow-step="sync"]),
+.workspace-grid.workflow-view-commit .action-panel .action-section:not([data-workflow-step="commit"]),
+.workspace-grid.workflow-view-conflict .action-panel .action-section:not([data-workflow-step="sync"]) { display: none; }
+.workspace-grid.workflow-view-commit .action-panel { grid-column: 1; }
+.workspace-grid.workflow-view-conflict .action-panel { grid-column: 1; }
+.workspace-grid.workflow-view-conflict .changes-panel { grid-column: 2; }
+@media (max-width: 980px) {
+  .workflow-bar { grid-template-columns: 1fr auto; }
+  .workflow-steps { grid-column: 1 / -1; grid-row: 2; }
+}
+@media (max-width: 1120px) {
+  .workspace-grid.workflow-view-settings .action-panel,
+  .workspace-grid.workflow-view-sync .action-panel,
+  .workspace-grid.workflow-view-commit .action-panel,
+  .workspace-grid.workflow-view-conflict .action-panel { display: block; max-width: none; }
+  .workspace-grid.workflow-view-conflict .action-panel { grid-column: 1; grid-row: 1; }
+  .workspace-grid.workflow-view-conflict .changes-panel { grid-column: 1; grid-row: 2; }
+}
+@media (max-width: 620px) {
+  .workflow-bar { grid-template-columns: 1fr; gap: 12px; }
+  .workflow-steps { grid-column: auto; grid-row: auto; overflow-x: auto; padding-bottom: 2px; }
+  .workflow-step { min-width: auto; }
+  .workflow-connector { min-width: 12px; margin: 0 4px; }
+  .workflow-next { width: 100%; }
+}
 @media (max-width: 720px) {
   .conflict-banner { flex-wrap: wrap; }
   .conflict-actions { width: 100%; justify-content: flex-start; margin-left: 28px; }

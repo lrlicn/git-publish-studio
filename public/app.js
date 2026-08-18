@@ -54,6 +54,9 @@ function bindEvents() {
   elements['clone-url'].addEventListener('input', suggestCloneFolder)
   elements['open-diff'].addEventListener('click', openDiffWindow)
   elements['open-conflict-diff'].addEventListener('click', openDiffWindow)
+  elements['open-message-presets'].addEventListener('click', () => elements['commit-presets-dialog'].showModal())
+  document.querySelectorAll('.commit-preset').forEach(button => button.addEventListener('click', () => applyCommitPreset(button.dataset.prefix)))
+  elements['workflow-next'].addEventListener('click', handleWorkflowNext)
   elements['clear-recents'].addEventListener('click', clearRecents)
   elements['toggle-console'].addEventListener('click', toggleConsole)
 }
@@ -283,6 +286,7 @@ function renderSnapshot() {
   elements['config-path'].title = snapshot.configPath || '.git/config'
   renderChanges(snapshot)
   renderCommits(snapshot.recentCommits || [])
+  renderWorkflow(snapshot)
   updateButtons(snapshot)
   createIcons({ icons })
 }
@@ -316,6 +320,118 @@ function renderCommits(commits) {
     : '<div class="list-empty"><span>还没有本地提交</span></div>'
 }
 
+function renderWorkflow(snapshot) {
+  const steps = ['settings', 'stage', 'commit', 'sync'].map(name => elements[`workflow-step-${name}`])
+  steps.forEach(step => step.classList.remove('active', 'complete', 'blocked'))
+  const button = elements['workflow-next']
+  let current = 0
+  let title = '准备工作区'
+  let description = '打开仓库后，按当前状态完成下一步。'
+  let action = ''
+  let focus = ''
+  let buttonText = '下一步'
+  let view = 'settings'
+  const initialized = snapshot.initialized
+  const changes = snapshot.changes || []
+  const stagedCount = changes.filter(change => change.staged).length
+  const conflictCount = changes.filter(change => change.conflict).length
+  const hasIdentity = Boolean(snapshot.identity?.name && snapshot.identity?.email)
+
+  if (!initialized) {
+    title = '先初始化仓库'
+    description = '这个目录还不是 Git 仓库，初始化后才能继续。'
+    action = 'init'
+    buttonText = '初始化 Git'
+  } else if (snapshot.rebaseInProgress) {
+    view = 'conflict'
+    current = 3
+    title = conflictCount ? '先解决冲突' : '继续当前变基'
+    description = conflictCount ? '打开 Diff，处理冲突并暂存文件。' : '冲突已处理，确认暂存后继续变基。'
+    action = conflictCount ? 'openConflictDiff' : 'continueRebase'
+    buttonText = conflictCount ? '查看冲突 Diff' : '继续变基'
+    if (conflictCount) steps[3].classList.add('blocked')
+  } else if (!snapshot.remoteUrl) {
+    view = 'settings'
+    title = '配置远程仓库'
+    description = '先填写 origin 地址，之后才能推送或拉取。'
+    focus = 'remote-url'
+    buttonText = '填写远程地址'
+  } else if (!hasIdentity) {
+    view = 'settings'
+    title = '配置提交身份'
+    description = '提交前需要 Git 用户名和邮箱。'
+    focus = 'git-name'
+    buttonText = '填写提交身份'
+  } else if (changes.length > 0 && stagedCount === 0) {
+    view = 'stage'
+    current = 1
+    title = '暂存要提交的文件'
+    description = '先把本次要发布的文件放入暂存区。'
+    action = 'stageAll'
+    buttonText = '全部暂存'
+  } else if (stagedCount > 0) {
+    view = 'commit'
+    current = 2
+    title = '检查 Diff 并创建提交'
+    description = '确认修改前后差异，再填写提交说明。'
+    action = 'openDiff'
+    buttonText = '查看提交前 Diff'
+  } else if ((snapshot.ahead || 0) > 0) {
+    view = 'sync'
+    current = 3
+    title = '推送本地提交'
+    description = `本地有 ${snapshot.ahead} 个提交尚未同步到远端。`
+    action = 'push'
+    buttonText = '推送到远端'
+  } else if ((snapshot.behind || 0) > 0) {
+    view = 'sync'
+    current = 3
+    title = '同步远端更新'
+    description = `远端领先 ${snapshot.behind} 个提交，先拉取并变基。`
+    action = 'pullRebase'
+    buttonText = '拉取并变基'
+  } else {
+    view = 'sync'
+    current = 4
+    title = '工作区已同步'
+    description = '当前分支、暂存区和远端没有待处理事项。'
+    buttonText = '已完成'
+  }
+
+  steps.forEach((step, index) => {
+    if (current === 4 || index < current) step.classList.add('complete')
+    if (current < 4 && index === current) step.classList.add('active')
+  })
+  elements['workflow-title'].textContent = title
+  elements['workflow-description'].textContent = description
+  button.querySelector('span').textContent = buttonText
+  button.dataset.action = action
+  button.dataset.focus = focus
+  button.disabled = !action && !focus
+  elements['repo-content'].className = `workspace-grid workflow-view-${view}`
+  elements['repo-state'].textContent = title
+  elements['repo-state'].className = `repo-state ${current === 4 ? 'state-success' : conflictCount ? 'state-danger' : current === 3 ? 'state-sync' : 'state-active'}`
+}
+
+function handleWorkflowNext() {
+  const action = elements['workflow-next'].dataset.action
+  const focus = elements['workflow-next'].dataset.focus
+  if (action === 'openDiff' || action === 'openConflictDiff') return openDiffWindow()
+  if (focus) return elements[focus]?.focus()
+  if (action) void runAction(action, { acknowledgeRisks: elements['risk-confirm'].checked })
+}
+
+function applyCommitPreset(prefix) {
+  const textarea = elements['commit-message']
+  const content = textarea.value.replace(/^[a-z]+:\s*/i, '').trimStart()
+  textarea.value = `${prefix} ${content}`
+  textarea.focus()
+  textarea.setSelectionRange(textarea.value.length, textarea.value.length)
+  if (navigator.clipboard) void navigator.clipboard.writeText(prefix).catch(() => {})
+  elements['commit-presets-dialog'].close()
+  toast(`${prefix} 已复制并填入`)
+}
+
 function updateButtons(snapshot) {
   const initialized = snapshot.initialized
   const stagedCount = snapshot.changes?.filter(change => change.staged).length || 0
@@ -326,9 +442,10 @@ function updateButtons(snapshot) {
   elements['commit-button'].disabled = !initialized || stagedCount === 0 || conflictCount > 0
   elements['open-diff'].disabled = !initialized || stagedCount === 0
   elements['fetch-button'].disabled = !snapshot.remoteUrl
-  elements['pull-button'].disabled = !snapshot.remoteUrl || conflictCount > 0
-  elements['push-button'].disabled = !snapshot.remoteUrl || conflictCount > 0
-  elements['open-force'].disabled = !snapshot.remoteUrl || conflictCount > 0
+  const syncBlocked = conflictCount > 0 || snapshot.rebaseInProgress
+  elements['pull-button'].disabled = !snapshot.remoteUrl || syncBlocked
+  elements['push-button'].disabled = !snapshot.remoteUrl || syncBlocked
+  elements['open-force'].disabled = !snapshot.remoteUrl || syncBlocked
   elements['continue-rebase'].disabled = !snapshot.rebaseInProgress || conflictCount > 0
 }
 

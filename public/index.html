@@ -46,7 +46,22 @@
             <span class="fact"><i data-lucide="cloud"></i><span id="upstream-name">未跟踪远端</span></span>
             <span class="sync-fact ahead"><i data-lucide="arrow-up"></i><span id="ahead-count">0</span></span>
             <span class="sync-fact behind"><i data-lucide="arrow-down"></i><span id="behind-count">0</span></span>
+            <span id="repo-state" class="repo-state">等待检查</span>
           </div>
+        </section>
+
+        <section class="workflow-bar" aria-label="操作流程">
+          <div class="workflow-heading"><span class="eyebrow">WORKFLOW</span><strong id="workflow-title">准备工作区</strong><span id="workflow-description">打开仓库后，按当前状态完成下一步。</span></div>
+          <div class="workflow-steps" role="list">
+            <div class="workflow-step" id="workflow-step-settings" role="listitem"><span class="workflow-index">1</span><span>准备</span></div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-step" id="workflow-step-stage" role="listitem"><span class="workflow-index">2</span><span>暂存</span></div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-step" id="workflow-step-commit" role="listitem"><span class="workflow-index">3</span><span>提交</span></div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-step" id="workflow-step-sync" role="listitem"><span class="workflow-index">4</span><span>同步</span></div>
+          </div>
+          <button class="primary-button compact workflow-next" id="workflow-next" type="button" disabled><i data-lucide="arrow-right"></i><span>下一步</span></button>
         </section>
 
         <section id="not-repo" class="notice-band hidden"><i data-lucide="info"></i><span>该目录还不是 Git 仓库。</span><button class="primary-button compact" id="notice-init">初始化 Git</button></section>
@@ -65,7 +80,7 @@
           </section>
 
           <aside class="action-panel">
-            <section class="action-section">
+            <section class="action-section" data-workflow-step="settings">
               <div class="section-title"><span class="step-number">1</span><h2>仓库设置</h2></div>
               <label>远程地址</label>
               <div class="inline-field"><input id="remote-url" type="text" spellcheck="false" placeholder="https://github.com/user/repo.git"><button class="icon-button bordered" id="save-remote" title="保存远程地址"><i data-lucide="save"></i></button></div>
@@ -74,17 +89,18 @@
               <div class="config-map" aria-label="仓库配置状态"><div><span>提交身份</span><strong id="identity-source">未配置</strong></div><div><span>远程 origin</span><strong id="remote-source">未配置</strong></div><div class="config-path-row"><span>保存位置</span><code id="config-path">.git/config</code></div></div>
             </section>
 
-            <section class="action-section">
+            <section class="action-section" data-workflow-step="commit">
               <div class="section-title"><span class="step-number">2</span><h2>创建提交</h2></div>
-              <label for="commit-message">提交说明</label>
+              <div class="field-label-row"><label for="commit-message">提交说明</label><button class="text-button" id="open-message-presets" type="button"><i data-lucide="text-cursor-input"></i><span>常用格式</span></button></div>
               <textarea id="commit-message" rows="3" maxlength="200" placeholder="例如：feat: add repository clone workflow"></textarea>
+              <span class="field-hint">查看 Diff 只用于检查，不会提交；确认后回到这里创建提交。</span>
               <label id="risk-confirm-wrap" class="check-row hidden"><input id="risk-confirm" type="checkbox"><span>我已检查暂存区中的敏感或大文件</span></label>
               <button class="primary-button full" id="commit-button"><i data-lucide="git-commit-horizontal"></i><span>提交暂存内容</span></button>
               <button class="secondary-button full diff-button" id="open-diff"><i data-lucide="panels-top-left"></i><span>提交前查看 Diff</span></button>
               <pre id="staged-stat" class="staged-stat hidden"></pre>
             </section>
 
-            <section class="action-section sync-section">
+            <section class="action-section sync-section" data-workflow-step="sync">
               <div class="section-title"><span class="step-number">3</span><h2>同步远端</h2></div>
               <div class="sync-actions"><button class="secondary-button" id="fetch-button"><i data-lucide="cloud-download"></i><span>获取</span></button><button class="secondary-button" id="pull-button"><i data-lucide="git-pull-request-arrow"></i><span>拉取</span></button><button class="primary-button" id="push-button"><i data-lucide="cloud-upload"></i><span>推送</span></button></div>
               <button class="danger-text-button" id="open-force"><i data-lucide="shield-alert"></i><span>安全覆盖远程分支</span></button>
@@ -104,6 +120,20 @@
       <pre id="console-output">等待操作…</pre>
     </section>
   </div>
+
+  <dialog id="commit-presets-dialog" class="dialog commit-presets-dialog">
+    <form method="dialog">
+      <div class="dialog-header"><div><span class="dialog-icon"><i data-lucide="text-cursor-input"></i></span><div><h2>提交说明格式</h2><p>选择前缀后，会复制关键标识并填入提交说明。</p></div></div><button class="icon-button" value="cancel" title="关闭"><i data-lucide="x"></i></button></div>
+      <div class="preset-list">
+        <button class="commit-preset" type="button" data-prefix="feat:"><code>feat:</code><span><strong>新增功能</strong><small>feat: add ...</small></span><i data-lucide="copy"></i></button>
+        <button class="commit-preset" type="button" data-prefix="fix:"><code>fix:</code><span><strong>修复问题</strong><small>fix: resolve ...</small></span><i data-lucide="copy"></i></button>
+        <button class="commit-preset" type="button" data-prefix="docs:"><code>docs:</code><span><strong>文档调整</strong><small>docs: update ...</small></span><i data-lucide="copy"></i></button>
+        <button class="commit-preset" type="button" data-prefix="refactor:"><code>refactor:</code><span><strong>代码重构</strong><small>refactor: simplify ...</small></span><i data-lucide="copy"></i></button>
+        <button class="commit-preset" type="button" data-prefix="chore:"><code>chore:</code><span><strong>工程维护</strong><small>chore: update ...</small></span><i data-lucide="copy"></i></button>
+      </div>
+      <div class="dialog-footer"><button class="secondary-button" value="cancel">关闭</button></div>
+    </form>
+  </dialog>
 
   <dialog id="directory-dialog" class="dialog directory-dialog">
     <form method="dialog">

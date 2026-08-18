@@ -128,9 +128,14 @@ async function performAction(body) {
       result = await runGit(['-C', repositoryPath, 'remote', exists ? 'set-url' : 'add', 'origin', remoteUrl])
       break
     }
-    case 'stageAll':
+    case 'stageAll': {
+      const conflictMarkers = await findConflictMarkers(repositoryPath)
+      if (conflictMarkers.length > 0) {
+        throw httpError(409, `以下冲突文件仍保留冲突标记：${conflictMarkers.join('、')}`)
+      }
       result = await runGit(['-C', repositoryPath, 'add', '-A'])
       break
+    }
     case 'unstage':
       result = await runGit(['-C', repositoryPath, 'reset'])
       break
@@ -293,6 +298,17 @@ async function isRebaseInProgress(repositoryPath) {
     if (await fs.stat(candidate).then(() => true).catch(() => false)) return true
   }
   return false
+}
+
+async function findConflictMarkers(repositoryPath) {
+  const result = await runGit(['-C', repositoryPath, 'diff', '--name-only', '--diff-filter=U', '-z'], { allowFailure: true })
+  const paths = result.stdout.split('\0').filter(Boolean)
+  const marked = []
+  for (const filePath of paths) {
+    const content = await fs.readFile(path.resolve(repositoryPath, filePath), 'utf8').catch(() => '')
+    if (/^(<<<<<<<|=======|>>>>>>>)(?:\s|$)/m.test(content)) marked.push(filePath)
+  }
+  return marked
 }
 
 function parseUnmergedFiles(output) {
