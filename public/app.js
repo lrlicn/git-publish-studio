@@ -29,6 +29,11 @@ function bindEvents() {
   elements['notice-init'].addEventListener('click', () => void runAction('init'))
   elements['refresh-repo'].addEventListener('click', () => void refreshRepository())
   elements['open-folder'].addEventListener('click', () => void runAction('openFolder'))
+  elements['close-repo'].addEventListener('click', requestCloseRepository)
+  elements['confirm-close-repo'].addEventListener('click', event => {
+    event.preventDefault()
+    closeRepository()
+  })
   elements['stage-all'].addEventListener('click', () => void runAction('stageAll'))
   elements['unstage-all'].addEventListener('click', () => void runAction('unstage'))
   elements['save-remote'].addEventListener('click', () => void runAction('remote', { remoteUrl: elements['remote-url'].value }))
@@ -59,7 +64,15 @@ function bindEvents() {
   elements['open-message-presets'].addEventListener('click', () => elements['commit-presets-dialog'].showModal())
   document.querySelectorAll('.commit-preset').forEach(button => button.addEventListener('click', () => applyCommitPreset(button.dataset.prefix)))
   elements['workflow-next'].addEventListener('click', handleWorkflowNext)
-  elements['clear-recents'].addEventListener('click', clearRecents)
+  elements['clear-recents'].addEventListener('click', () => {
+    if (!state.recents.length) return toast('暂无最近项目记录')
+    elements['clear-recents-dialog'].showModal()
+  })
+  elements['confirm-clear-recents'].addEventListener('click', event => {
+    event.preventDefault()
+    clearRecents()
+    elements['clear-recents-dialog'].close()
+  })
   elements['toggle-console'].addEventListener('click', toggleConsole)
 }
 
@@ -533,27 +546,66 @@ function updateButtons(snapshot) {
 function rememberRepository(repositoryPath) {
   state.recents = [repositoryPath, ...state.recents.filter(item => !sameLocalPath(item, repositoryPath))].slice(0, 12)
   localStorage.setItem('git-publish:recents', JSON.stringify(state.recents))
+  renderRecents()
 }
 
 function renderRecents() {
   elements['recent-list'].innerHTML = state.recents.length
-    ? state.recents.map(repositoryPath => `<button class="recent-item ${sameLocalPath(state.currentPath, repositoryPath) ? 'active' : ''}" data-path="${escapeHtml(repositoryPath)}"><span class="recent-icon"><i data-lucide="folder-git-2"></i></span><span class="recent-copy"><strong>${escapeHtml(pathBasename(repositoryPath))}</strong><span>${escapeHtml(repositoryPath)}</span></span></button>`).join('')
+    ? state.recents.map(repositoryPath => `<div class="recent-item ${sameLocalPath(state.currentPath, repositoryPath) ? 'active' : ''}"><button class="recent-open" type="button" data-path="${escapeHtml(repositoryPath)}"><span class="recent-icon"><i data-lucide="folder-git-2"></i></span><span class="recent-copy"><strong>${escapeHtml(pathBasename(repositoryPath))}</strong><span>${escapeHtml(repositoryPath)}</span></span></button><button class="recent-remove" type="button" data-remove-path="${escapeHtml(repositoryPath)}" title="移除这条记录"><i data-lucide="x"></i></button></div>`).join('')
     : '<div class="list-empty"><span>暂无记录</span></div>'
+  elements['recent-count'].textContent = state.recents.length
   elements['recent-list'].querySelectorAll('[data-path]').forEach(button => button.addEventListener('click', () => void openRepository(button.dataset.path)))
+  elements['recent-list'].querySelectorAll('[data-remove-path]').forEach(button => button.addEventListener('click', event => {
+    event.stopPropagation()
+    removeRecent(button.dataset.removePath)
+  }))
   createIcons({ icons })
 }
 
 function clearRecents() {
   state.recents = []
+  localStorage.removeItem('git-publish:recents')
+  localStorage.removeItem('git-publish:last-path')
+  renderRecents()
+  toast('最近项目记录已清空，当前项目保持打开')
+}
+
+function requestCloseRepository() {
+  if (!state.snapshot || state.busy) return
+  const snapshot = state.snapshot
+  const changes = snapshot.changes || []
+  const conflictCount = changes.filter(change => change.conflict).length
+  const risks = []
+  if (snapshot.rebaseInProgress) risks.push('当前正在进行变基，关闭后仍需重新打开项目继续处理。')
+  if (conflictCount > 0) risks.push(`存在 ${conflictCount} 个未解决的冲突文件。`)
+  if (changes.length > 0) risks.push(`工作区还有 ${changes.length} 个未提交的文件变更。`)
+  if ((snapshot.ahead || 0) > 0 || (!snapshot.upstream && (snapshot.recentCommits || []).length > 0)) risks.push('本地提交尚未全部推送到远端。')
+  if (!risks.length) return closeRepository()
+  elements['close-repo-risks'].replaceChildren(...risks.map(message => {
+    const item = document.createElement('li')
+    item.textContent = message
+    return item
+  }))
+  elements['close-repo-dialog'].showModal()
+}
+
+function closeRepository() {
   state.snapshot = undefined
   state.currentPath = ''
-  localStorage.removeItem('git-publish:recents')
   localStorage.removeItem('git-publish:last-path')
   elements['repo-path'].value = ''
   elements['repo-workspace'].classList.add('hidden')
   elements['empty-state'].classList.remove('hidden')
+  if (elements['close-repo-dialog'].open) elements['close-repo-dialog'].close()
   renderRecents()
-  toast('最近记录已清空')
+  toast('当前项目已关闭，项目文件和最近记录均已保留')
+}
+
+function removeRecent(repositoryPath) {
+  state.recents = state.recents.filter(item => !sameLocalPath(item, repositoryPath))
+  localStorage.setItem('git-publish:recents', JSON.stringify(state.recents))
+  renderRecents()
+  toast(`已移除 ${pathBasename(repositoryPath)}`)
 }
 
 function openCloneDialog() {

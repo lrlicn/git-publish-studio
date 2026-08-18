@@ -46,6 +46,8 @@ button:active:not(:disabled) { transform: scale(.98); }
 .icon-button { color: #aaa; }
 .icon-button:hover { background: rgba(255,255,255,.07); color: #fff; }
 .icon-button.bordered { background: #202125; }
+.repo-header-actions .close-repo-button { margin-left: 3px; border-left: 1px solid rgba(255,255,255,.12); border-radius: 0 5px 5px 0; }
+.repo-header-actions .close-repo-button:hover { background: rgba(248,81,73,.12); color: #ff9189; }
 .empty-state { border-color: rgba(255,255,255,.12); background: linear-gradient(145deg, rgba(38, 40, 44, .96), rgba(18, 19, 21, .96)); }
 .empty-state::before { opacity: .26; background-image: radial-gradient(circle, rgba(255,255,255,.18) 1px, transparent 1.5px); }
 .empty-brand { background: #18191c; border-color: rgba(255,255,255,.14); box-shadow: 0 0 30px rgba(255,255,255,.04); }
@@ -104,6 +106,18 @@ button:active:not(:disabled) { transform: scale(.98); }
 .commit-preset strong { color: #e7e7e8; font-size: 11px; font-weight: 650; }
 .commit-preset small { color: #818388; font: 10px Consolas, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .commit-preset > svg { width: 15px; color: #8e9095; }
+.sidebar-heading > span { display: inline-flex; align-items: center; gap: 5px; }
+.sidebar-heading small { min-width: 17px; height: 17px; padding: 0 4px; border: 1px solid rgba(255,255,255,.14); border-radius: 9px; background: rgba(255,255,255,.07); color: #bfc0c3; display: inline-grid; place-items: center; font-size: 9px; font-weight: 700; }
+.recent-item { position: relative; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr) 28px; gap: 0; overflow: hidden; }
+.recent-open { width: 100%; min-width: 0; min-height: 42px; padding: 5px 8px; border: 0; background: transparent; color: #e7e7e8; text-align: left; display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: 8px; }
+.recent-open:hover { background: transparent; }
+.recent-open .recent-copy { min-width: 0; overflow: hidden; }
+.recent-open .recent-copy strong { display: block; overflow: hidden; color: #e7e7e8; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.recent-open .recent-copy span { display: block; overflow: hidden; color: #85878b; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.recent-remove { width: 28px; min-height: 28px; margin: 7px 4px 0 0; border: 0; border-radius: 4px; background: transparent; color: #77797d; display: grid; place-items: center; align-self: start; }
+.recent-remove:hover { background: rgba(248,81,73,.13); color: #ff9189; }
+.recent-remove svg { width: 14px; }
+.close-repo-risks { margin: 12px 0 0; padding-left: 20px; color: #e0c0bd; font-size: 11px; line-height: 1.7; }
 .sync-guidance { min-height: 48px; margin: 10px 0; padding: 9px 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 6px; background: #191a1d; color: #aeb0b4; display: flex; align-items: center; gap: 9px; }
 .sync-guidance > svg { width: 18px; color: #72d2a4; flex: 0 0 auto; }
 .sync-guidance div { min-width: 0; display: grid; gap: 2px; }
@@ -278,7 +292,7 @@ button:active:not(:disabled) { transform: scale(.98); }
 .sidebar-heading #clear-recents { width: 28px; min-height: 28px; }
 .recent-list { min-width: 0; display: flex; align-items: center; gap: 5px; overflow-x: auto; scrollbar-width: thin; }
 .recent-list .list-empty { width: 100%; min-height: 40px; place-content: center start; }
-.recent-item { width: 210px; min-width: 210px; min-height: 42px; padding: 5px 8px; grid-template-columns: 28px minmax(0, 1fr); }
+.recent-item { width: 210px; min-width: 210px; min-height: 42px; padding: 0; grid-template-columns: minmax(0, 1fr) 28px; }
 .recent-icon { width: 28px; height: 28px; }
 .clone-button { min-width: 158px; min-height: 40px; }
 .main-content { grid-column: 1; grid-row: 3; padding: 22px 28px 94px; }

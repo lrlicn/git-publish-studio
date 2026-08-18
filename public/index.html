@@ -17,7 +17,7 @@
     </header>
 
     <aside class="sidebar">
-      <div class="sidebar-heading"><span>最近项目</span><button class="icon-button" id="clear-recents" title="清空最近记录"><i data-lucide="trash-2"></i></button></div>
+      <div class="sidebar-heading"><span>最近项目 <small id="recent-count">0</small></span><button class="icon-button" id="clear-recents" title="清空全部最近记录"><i data-lucide="trash-2"></i></button></div>
       <nav id="recent-list" class="recent-list"></nav>
       <button class="clone-button" id="open-clone"><i data-lucide="copy-plus"></i><span>克隆远程仓库</span></button>
     </aside>
@@ -40,7 +40,7 @@
       <div id="repo-workspace" class="repo-workspace hidden">
         <section class="repo-header">
           <div class="repo-title"><div class="repo-icon"><i data-lucide="folder-git"></i></div><div><h1 id="repo-name">项目</h1><span id="repo-full-path"></span></div></div>
-          <div class="repo-header-actions"><button class="icon-button" id="refresh-repo" title="刷新"><i data-lucide="refresh-cw"></i></button><button class="icon-button" id="open-folder" title="在文件管理器中打开"><i data-lucide="external-link"></i></button></div>
+          <div class="repo-header-actions"><button class="icon-button" id="refresh-repo" title="刷新"><i data-lucide="refresh-cw"></i></button><button class="icon-button" id="open-folder" title="在文件管理器中打开"><i data-lucide="external-link"></i></button><button class="icon-button close-repo-button" id="close-repo" title="关闭当前项目"><i data-lucide="folder-x"></i></button></div>
           <div class="repo-facts">
             <span class="fact"><i data-lucide="git-branch"></i><strong id="branch-name">main</strong></span>
             <span class="fact"><i data-lucide="cloud"></i><span id="upstream-name">未跟踪远端</span></span>
@@ -122,6 +122,22 @@
       <pre id="console-output">等待操作…</pre>
     </section>
   </div>
+
+  <dialog id="clear-recents-dialog" class="dialog warning-dialog">
+    <form method="dialog">
+      <div class="dialog-header"><div><span class="dialog-icon warning"><i data-lucide="trash-2"></i></span><div><h2>清空最近项目</h2><p>这只会移除本工具保存的路径记录，不会删除任何项目文件。</p></div></div><button class="icon-button" value="cancel" title="关闭"><i data-lucide="x"></i></button></div>
+      <div class="dialog-body"><div class="warning-copy">将移除全部最近项目记录。当前已经打开的项目仍会保持打开。</div></div>
+      <div class="dialog-footer"><button class="secondary-button" value="cancel">取消</button><button class="danger-button" value="default" id="confirm-clear-recents"><i data-lucide="trash-2"></i><span>清空全部记录</span></button></div>
+    </form>
+  </dialog>
+
+  <dialog id="close-repo-dialog" class="dialog warning-dialog">
+    <form method="dialog">
+      <div class="dialog-header"><div><span class="dialog-icon warning"><i data-lucide="folder-x"></i></span><div><h2>关闭当前项目</h2><p>项目仍有尚未完成的 Git 操作。</p></div></div><button class="icon-button" value="cancel" title="关闭"><i data-lucide="x"></i></button></div>
+      <div class="dialog-body"><div class="warning-copy">关闭只会退出当前工作区，不会删除项目文件或最近项目记录。</div><ul id="close-repo-risks" class="close-repo-risks"></ul></div>
+      <div class="dialog-footer"><button class="secondary-button" value="cancel">返回项目</button><button class="danger-button" value="default" id="confirm-close-repo"><i data-lucide="folder-x"></i><span>仍然关闭</span></button></div>
+    </form>
+  </dialog>
 
   <dialog id="commit-presets-dialog" class="dialog commit-presets-dialog">
     <form method="dialog">
