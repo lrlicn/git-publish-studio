@@ -181,7 +181,7 @@ async function performAction(body) {
       break
     }
     case 'openFolder':
-      openDirectory(repositoryPath)
+      await openDirectory(repositoryPath)
       result = { stdout: `已打开 ${repositoryPath}`, stderr: '', exitCode: 0 }
       break
     default:
@@ -508,14 +508,19 @@ function isDirectChild(parentPath, childPath) {
   return Boolean(relative) && !relative.startsWith('..') && !path.isAbsolute(relative) && !relative.includes(path.sep)
 }
 
-function openDirectory(directoryPath) {
+async function openDirectory(directoryPath) {
   const commands = {
     win32: ['explorer.exe', [directoryPath]],
     darwin: ['open', [directoryPath]],
     linux: ['xdg-open', [directoryPath]]
   }
   const [command, args] = commands[process.platform] || commands.linux
-  spawn(command, args, { detached: true, stdio: 'ignore', windowsHide: true }).unref()
+  await new Promise((resolve, reject) => {
+    const child = spawn(command, args, { detached: true, stdio: 'ignore', windowsHide: process.platform !== 'win32' })
+    child.once('spawn', resolve)
+    child.once('error', reject)
+    child.unref()
+  })
 }
 
 async function listDirectories(value) {
