@@ -211,7 +211,7 @@ async function cloneRepository(body) {
 async function repositorySnapshot(repositoryPath) {
   const repoCheck = await runGit(['-C', repositoryPath, 'rev-parse', '--is-inside-work-tree'], { allowFailure: true })
   if (repoCheck.exitCode !== 0 || repoCheck.stdout.trim() !== 'true') {
-    return { path: repositoryPath, initialized: false, branch: null, remoteUrl: null, upstream: null, ahead: 0, behind: 0, identity: {}, configPath: null, changes: [], risks: [], stagedStat: '', recentCommits: [] }
+    return { path: repositoryPath, initialized: false, branch: null, remoteUrl: null, upstream: null, ahead: null, behind: null, identity: {}, configPath: null, changes: [], risks: [], stagedStat: '', recentCommits: [] }
   }
   const [branchResult, remoteResult, upstreamResult, statusResult, nameResult, emailResult, localNameResult, localEmailResult, configPathResult, logResult, unmergedResult] = await Promise.all([
     runGit(['-C', repositoryPath, 'symbolic-ref', '--short', 'HEAD'], { allowFailure: true }),
@@ -232,8 +232,8 @@ async function repositorySnapshot(repositoryPath) {
   const detached = branchResult.exitCode !== 0
   const branch = detached ? '游离 HEAD' : (branchResult.stdout.trim() || 'main')
   const upstream = upstreamResult.exitCode === 0 ? upstreamResult.stdout.trim() : null
-  let ahead = 0
-  let behind = 0
+  let ahead = null
+  let behind = null
   if (upstream) {
     const counts = await runGit(['-C', repositoryPath, 'rev-list', '--left-right', '--count', `HEAD...${upstream}`], { allowFailure: true })
     const [localCount, remoteCount] = counts.stdout.trim().split(/\s+/).map(Number)
