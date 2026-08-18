@@ -35,6 +35,8 @@ function bindEvents() {
   elements['save-identity'].addEventListener('click', () => void runAction('identity', { name: elements['git-name'].value, email: elements['git-email'].value }))
   elements['commit-button'].addEventListener('click', () => void runAction('commit', { message: elements['commit-message'].value, acknowledgeRisks: elements['risk-confirm'].checked }))
   elements['fetch-button'].addEventListener('click', () => void runAction('fetch'))
+  elements['completion-refresh'].addEventListener('click', () => void runAction('fetch'))
+  elements['completion-open-folder'].addEventListener('click', () => void runAction('openFolder'))
   elements['pull-button'].addEventListener('click', () => void runAction('pullRebase'))
   elements['continue-rebase'].addEventListener('click', () => void runAction('continueRebase'))
   elements['push-button'].addEventListener('click', () => void runAction('push', { acknowledgeRisks: elements['risk-confirm'].checked }))
@@ -287,6 +289,8 @@ function renderSnapshot() {
   renderChanges(snapshot)
   renderCommits(snapshot.recentCommits || [])
   renderWorkflow(snapshot)
+  renderSyncGuidance(snapshot)
+  renderCompletion(snapshot)
   updateButtons(snapshot)
   createIcons({ icons })
 }
@@ -376,7 +380,7 @@ function renderWorkflow(snapshot) {
     description = '确认修改前后差异，再填写提交说明。'
     action = 'openDiff'
     buttonText = '查看提交前 Diff'
-  } else if ((snapshot.ahead || 0) > 0) {
+  } else if ((snapshot.ahead || 0) > 0 && (snapshot.behind || 0) === 0) {
     view = 'sync'
     current = 3
     title = '推送本地提交'
@@ -408,7 +412,7 @@ function renderWorkflow(snapshot) {
   button.dataset.action = action
   button.dataset.focus = focus
   button.disabled = !action && !focus
-  elements['repo-content'].className = `workspace-grid workflow-view-${view}`
+  elements['repo-content'].className = `workspace-grid workflow-view-${view}${current === 4 ? ' workflow-complete' : ''}`
   elements['repo-state'].textContent = title
   elements['repo-state'].className = `repo-state ${current === 4 ? 'state-success' : conflictCount ? 'state-danger' : current === 3 ? 'state-sync' : 'state-active'}`
 }
@@ -432,6 +436,47 @@ function applyCommitPreset(prefix) {
   toast(`${prefix} 已复制并填入`)
 }
 
+function renderSyncGuidance(snapshot) {
+  const guidance = elements['sync-guidance']
+  if (!guidance) return
+  const ahead = snapshot.ahead || 0
+  const behind = snapshot.behind || 0
+  const icon = guidance.querySelector('svg')
+  guidance.classList.remove('sync-ready', 'sync-pull', 'sync-push', 'sync-blocked')
+  if (snapshot.rebaseInProgress || (snapshot.changes || []).some(change => change.conflict)) {
+    guidance.classList.add('sync-blocked')
+    guidance.querySelector('strong').textContent = '请先处理当前变基或冲突'
+    guidance.querySelector('span').textContent = '同步按钮已暂停，完成冲突处理后再继续。'
+  } else if (behind > 0) {
+    guidance.classList.add('sync-pull')
+    guidance.querySelector('strong').textContent = '建议先拉取并变基'
+    guidance.querySelector('span').textContent = `远端领先 ${behind} 个提交，处理远端更新后才能安全推送。`
+  } else if (ahead > 0) {
+    guidance.classList.add('sync-push')
+    guidance.querySelector('strong').textContent = '建议推送本地提交'
+    guidance.querySelector('span').textContent = `本地有 ${ahead} 个提交等待上传到远端。`
+  } else {
+    guidance.classList.add('sync-ready')
+    guidance.querySelector('strong').textContent = '工作区已同步'
+    guidance.querySelector('span').textContent = '当前不需要执行同步操作，可用“刷新远端状态”再次确认。'
+  }
+  if (icon) icon.setAttribute('data-lucide', behind > 0 ? 'arrow-down-to-line' : ahead > 0 ? 'arrow-up-from-line' : 'circle-check-big')
+  createIcons({ icons })
+}
+
+function renderCompletion(snapshot) {
+  const complete = snapshot.initialized && Boolean(snapshot.remoteUrl) && !snapshot.rebaseInProgress
+    && !(snapshot.changes || []).some(change => change.conflict)
+    && (snapshot.changes || []).length === 0
+    && (snapshot.ahead || 0) === 0
+    && (snapshot.behind || 0) === 0
+  const summary = elements['completion-summary']
+  summary.classList.toggle('hidden', !complete)
+  elements['completion-branch'].textContent = snapshot.branch || '当前分支'
+  elements['completion-remote'].textContent = complete ? 'origin 已同步' : '等待同步'
+  elements['completion-changes'].textContent = `${snapshot.changes?.length || 0} 个`
+}
+
 function updateButtons(snapshot) {
   const initialized = snapshot.initialized
   const stagedCount = snapshot.changes?.filter(change => change.staged).length || 0
@@ -441,12 +486,19 @@ function updateButtons(snapshot) {
   elements['unstage-all'].disabled = !initialized || stagedCount === 0
   elements['commit-button'].disabled = !initialized || stagedCount === 0 || conflictCount > 0
   elements['open-diff'].disabled = !initialized || stagedCount === 0
-  elements['fetch-button'].disabled = !snapshot.remoteUrl
+  const ahead = snapshot.ahead || 0
+  const behind = snapshot.behind || 0
+  elements['fetch-button'].disabled = !snapshot.remoteUrl || snapshot.rebaseInProgress
   const syncBlocked = conflictCount > 0 || snapshot.rebaseInProgress
-  elements['pull-button'].disabled = !snapshot.remoteUrl || syncBlocked
-  elements['push-button'].disabled = !snapshot.remoteUrl || syncBlocked
+  elements['pull-button'].disabled = !snapshot.remoteUrl || syncBlocked || behind === 0
+  elements['push-button'].disabled = !snapshot.remoteUrl || syncBlocked || behind > 0 || ahead === 0
   elements['open-force'].disabled = !snapshot.remoteUrl || syncBlocked
   elements['continue-rebase'].disabled = !snapshot.rebaseInProgress || conflictCount > 0
+  elements['fetch-button'].classList.remove('recommended')
+  elements['pull-button'].classList.remove('recommended')
+  elements['push-button'].classList.remove('recommended')
+  if (!syncBlocked && behind > 0) elements['pull-button'].classList.add('recommended')
+  else if (!syncBlocked && ahead > 0) elements['push-button'].classList.add('recommended')
 }
 
 function rememberRepository(repositoryPath) {

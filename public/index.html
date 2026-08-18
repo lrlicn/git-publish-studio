@@ -101,8 +101,10 @@
             </section>
 
             <section class="action-section sync-section" data-workflow-step="sync">
-              <div class="section-title"><span class="step-number">3</span><h2>同步远端</h2></div>
-              <div class="sync-actions"><button class="secondary-button" id="fetch-button"><i data-lucide="cloud-download"></i><span>获取</span></button><button class="secondary-button" id="pull-button"><i data-lucide="git-pull-request-arrow"></i><span>拉取</span></button><button class="primary-button" id="push-button"><i data-lucide="cloud-upload"></i><span>推送</span></button></div>
+              <div class="section-title"><span class="step-number">4</span><h2>同步远端</h2></div>
+              <div id="sync-guidance" class="sync-guidance"><i data-lucide="circle-check-big"></i><div><strong>工作区已同步</strong><span>当前不需要执行同步操作。</span></div></div>
+              <div id="completion-summary" class="completion-summary hidden"><div class="completion-heading"><i data-lucide="badge-check"></i><div><strong>本次流程已完成</strong><span>本地提交已经与远端保持一致。</span></div></div><div class="completion-metrics"><div><span>当前分支</span><strong id="completion-branch">main</strong></div><div><span>远端状态</span><strong id="completion-remote">origin 已同步</strong></div><div><span>待处理变更</span><strong id="completion-changes">0 个</strong></div></div><div class="completion-actions"><button class="secondary-button" id="completion-refresh" type="button"><i data-lucide="refresh-cw"></i><span>刷新状态</span></button><button class="primary-button" id="completion-open-folder" type="button"><i data-lucide="external-link"></i><span>打开项目目录</span></button></div></div>
+              <div class="sync-actions"><button class="secondary-button" id="fetch-button"><i data-lucide="cloud-download"></i><span>刷新远端状态</span></button><button class="secondary-button" id="pull-button"><i data-lucide="git-pull-request-arrow"></i><span>拉取并变基</span></button><button class="primary-button" id="push-button"><i data-lucide="cloud-upload"></i><span>推送提交</span></button></div>
               <button class="danger-text-button" id="open-force"><i data-lucide="shield-alert"></i><span>安全覆盖远程分支</span></button>
             </section>
           </aside>
