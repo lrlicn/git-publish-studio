@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="git-tool-token" content="__SESSION_TOKEN__">
+  <title>提交前 Diff - Git Publish Studio</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.svg">
+  <link rel="stylesheet" href="/assets/diff.css">
+</head>
+<body>
+  <header class="diff-header">
+    <div class="diff-brand"><img src="/assets/logo.svg" alt=""><div><strong>提交前 Diff</strong><span id="repository-path">正在读取暂存区</span></div></div>
+    <div class="diff-actions"><span id="diff-summary" class="diff-summary">加载中</span><button id="fullscreen-button" type="button" title="全屏显示"><i data-lucide="maximize-2"></i><span>全屏</span></button><button id="close-button" type="button" title="关闭窗口"><i data-lucide="x"></i></button></div>
+  </header>
+  <main class="diff-layout">
+    <aside class="file-sidebar"><div class="file-heading"><span>已暂存文件</span><strong id="file-count">0</strong></div><nav id="file-list"></nav></aside>
+    <section class="diff-stage">
+      <div id="loading" class="diff-empty"><span class="loading-mark"></span><strong>正在生成差异对比</strong></div>
+      <div id="empty" class="diff-empty hidden"><i data-lucide="circle-check-big"></i><strong>暂存区没有差异</strong><span>返回工作台暂存文件后再查看。</span></div>
+      <div id="diff-content" class="diff-content hidden"></div>
+    </section>
+  </main>
+  <div id="toast" class="toast"></div>
+  <script type="module" src="/assets/diff.js"></script>
+</body>
+</html>

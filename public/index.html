@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="git-tool-token" content="__SESSION_TOKEN__">
+  <title>Git Publish Studio</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.svg">
+  <link rel="stylesheet" href="/assets/mono.css">
+</head>
+<body>
+  <div class="signal-field" aria-hidden="true"><span class="signal-line line-one"></span><span class="signal-line line-two"></span><span class="signal-line line-three"></span></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark"><img src="/assets/logo.svg" alt=""></span><div><strong>Git Publish Studio</strong><span>LOCAL REPOSITORY CONSOLE</span></div></div>
+      <div class="runtime"><span class="runtime-dot"></span><span id="git-version">正在检查 Git</span></div>
+    </header>
+
+    <aside class="sidebar">
+      <div class="sidebar-heading"><span>最近项目</span><button class="icon-button" id="clear-recents" title="清空最近记录"><i data-lucide="trash-2"></i></button></div>
+      <nav id="recent-list" class="recent-list"></nav>
+      <button class="clone-button" id="open-clone"><i data-lucide="copy-plus"></i><span>克隆远程仓库</span></button>
+    </aside>
+
+    <main class="main-content">
+      <section class="path-toolbar" aria-label="打开项目">
+        <div class="path-input-wrap"><i data-lucide="folder-git-2"></i><input id="repo-path" type="text" spellcheck="false" placeholder="选择或输入任意本地项目目录"></div>
+        <button class="secondary-button browse-button" id="pick-repo" title="选择项目目录"><i data-lucide="folder-search-2"></i><span>选择目录</span></button>
+        <button class="primary-button" id="open-repo"><i data-lucide="folder-open"></i><span>打开</span></button>
+        <button class="secondary-button" id="init-repo"><i data-lucide="circle-plus"></i><span>初始化</span></button>
+      </section>
+
+      <section id="empty-state" class="empty-state">
+        <div class="empty-brand"><img src="/assets/logo.svg" alt="Git Publish Studio"></div>
+        <h1>打开一个本地项目</h1>
+        <p>选择已有目录，或从远程仓库开始。</p>
+        <div class="empty-actions"><button class="primary-button" id="empty-pick"><i data-lucide="folder-search-2"></i><span>选择项目目录</span></button><button class="secondary-button" id="empty-clone"><i data-lucide="download"></i><span>克隆远程仓库</span></button></div>
+      </section>
+
+      <div id="repo-workspace" class="repo-workspace hidden">
+        <section class="repo-header">
+          <div class="repo-title"><div class="repo-icon"><i data-lucide="folder-git"></i></div><div><h1 id="repo-name">项目</h1><span id="repo-full-path"></span></div></div>
+          <div class="repo-header-actions"><button class="icon-button" id="refresh-repo" title="刷新"><i data-lucide="refresh-cw"></i></button><button class="icon-button" id="open-folder" title="在文件管理器中打开"><i data-lucide="external-link"></i></button></div>
+          <div class="repo-facts">
+            <span class="fact"><i data-lucide="git-branch"></i><strong id="branch-name">main</strong></span>
+            <span class="fact"><i data-lucide="cloud"></i><span id="upstream-name">未跟踪远端</span></span>
+            <span class="sync-fact ahead"><i data-lucide="arrow-up"></i><span id="ahead-count">0</span></span>
+            <span class="sync-fact behind"><i data-lucide="arrow-down"></i><span id="behind-count">0</span></span>
+          </div>
+        </section>
+
+        <section id="not-repo" class="notice-band hidden"><i data-lucide="info"></i><span>该目录还不是 Git 仓库。</span><button class="primary-button compact" id="notice-init">初始化 Git</button></section>
+
+        <div id="repo-content" class="workspace-grid">
+          <section class="changes-panel">
+            <div class="panel-toolbar">
+              <div><h2>文件变更</h2><span id="change-summary">工作区干净</span></div>
+              <div class="toolbar-actions"><button class="secondary-button compact" id="unstage-all"><i data-lucide="undo-2"></i><span>取消暂存</span></button><button class="primary-button compact" id="stage-all"><i data-lucide="list-plus"></i><span>全部暂存</span></button></div>
+            </div>
+            <div id="risk-banner" class="risk-banner hidden"><i data-lucide="shield-alert"></i><div><strong>暂存区需要确认</strong><ul id="risk-list"></ul></div></div>
+            <div id="conflict-banner" class="conflict-banner hidden"><i data-lucide="git-merge"></i><div class="conflict-copy"><strong>存在未解决冲突</strong><p id="conflict-help">请先在编辑器中处理冲突文件，再暂存并继续变基。</p></div><div class="conflict-actions"><button class="secondary-button compact" id="open-conflict-diff" type="button"><i data-lucide="panels-top-left"></i><span>查看 Diff</span></button><button class="primary-button compact" id="continue-rebase" type="button"><i data-lucide="git-merge"></i><span>继续变基</span></button></div></div>
+            <div class="change-table-head"><span>状态</span><span>文件</span><span>区域</span></div>
+            <div id="change-list" class="change-list"></div>
+            <div id="changes-empty" class="list-empty"><i data-lucide="circle-check-big"></i><span>没有待提交的变更</span></div>
+          </section>
+
+          <aside class="action-panel">
+            <section class="action-section">
+              <div class="section-title"><span class="step-number">1</span><h2>仓库设置</h2></div>
+              <label>远程地址</label>
+              <div class="inline-field"><input id="remote-url" type="text" spellcheck="false" placeholder="https://github.com/user/repo.git"><button class="icon-button bordered" id="save-remote" title="保存远程地址"><i data-lucide="save"></i></button></div>
+              <div class="identity-grid"><div><label>Git 用户名</label><input id="git-name" type="text" placeholder="你的名字"></div><div><label>Git 邮箱</label><input id="git-email" type="email" placeholder="name@example.com"></div></div>
+              <button class="secondary-button full" id="save-identity"><i data-lucide="user-round-check"></i><span>保存提交身份</span></button>
+              <div class="config-map" aria-label="仓库配置状态"><div><span>提交身份</span><strong id="identity-source">未配置</strong></div><div><span>远程 origin</span><strong id="remote-source">未配置</strong></div><div class="config-path-row"><span>保存位置</span><code id="config-path">.git/config</code></div></div>
+            </section>
+
+            <section class="action-section">
+              <div class="section-title"><span class="step-number">2</span><h2>创建提交</h2></div>
+              <label for="commit-message">提交说明</label>
+              <textarea id="commit-message" rows="3" maxlength="200" placeholder="例如：feat: add repository clone workflow"></textarea>
+              <label id="risk-confirm-wrap" class="check-row hidden"><input id="risk-confirm" type="checkbox"><span>我已检查暂存区中的敏感或大文件</span></label>
+              <button class="primary-button full" id="commit-button"><i data-lucide="git-commit-horizontal"></i><span>提交暂存内容</span></button>
+              <button class="secondary-button full diff-button" id="open-diff"><i data-lucide="panels-top-left"></i><span>提交前查看 Diff</span></button>
+              <pre id="staged-stat" class="staged-stat hidden"></pre>
+            </section>
+
+            <section class="action-section sync-section">
+              <div class="section-title"><span class="step-number">3</span><h2>同步远端</h2></div>
+              <div class="sync-actions"><button class="secondary-button" id="fetch-button"><i data-lucide="cloud-download"></i><span>获取</span></button><button class="secondary-button" id="pull-button"><i data-lucide="git-pull-request-arrow"></i><span>拉取</span></button><button class="primary-button" id="push-button"><i data-lucide="cloud-upload"></i><span>推送</span></button></div>
+              <button class="danger-text-button" id="open-force"><i data-lucide="shield-alert"></i><span>安全覆盖远程分支</span></button>
+            </section>
+          </aside>
+        </div>
+
+        <section class="history-panel">
+          <div class="panel-toolbar"><div><h2>最近提交</h2><span>当前分支</span></div></div>
+          <div id="commit-list" class="commit-list"></div>
+        </section>
+      </div>
+    </main>
+
+    <section id="console-panel" class="console-panel collapsed">
+      <button class="console-heading" id="toggle-console"><span><i data-lucide="terminal-square"></i>操作输出</span><i data-lucide="chevron-up" id="console-chevron"></i></button>
+      <pre id="console-output">等待操作…</pre>
+    </section>
+  </div>
+
+  <dialog id="directory-dialog" class="dialog directory-dialog">
+    <form method="dialog">
+      <div class="dialog-header"><div><span class="dialog-icon"><i data-lucide="folder-search-2"></i></span><div><h2>选择目录</h2><p>浏览本机磁盘和文件夹</p></div></div><button class="icon-button" value="cancel" title="关闭"><i data-lucide="x"></i></button></div>
+      <div class="directory-body">
+        <nav id="directory-roots" class="directory-roots" aria-label="磁盘位置"></nav>
+        <div class="directory-browser">
+          <div class="directory-path-row"><div class="path-input-wrap"><i data-lucide="folder"></i><input id="directory-current" type="text" spellcheck="false" aria-label="当前目录"></div><button id="directory-go" class="secondary-button" type="button"><i data-lucide="corner-down-left"></i><span>前往</span></button></div>
+          <div class="directory-tools"><button id="directory-home" class="icon-button bordered" type="button" title="主目录"><i data-lucide="house"></i></button><button id="directory-up" class="icon-button bordered" type="button" title="上一级"><i data-lucide="arrow-up"></i></button><button id="directory-refresh" class="icon-button bordered" type="button" title="刷新"><i data-lucide="refresh-cw"></i></button><span id="directory-count">正在读取…</span></div>
+          <div id="directory-list" class="directory-list"></div>
+        </div>
+      </div>
+      <div class="dialog-footer"><button class="secondary-button" value="cancel">取消</button><button class="primary-button" type="button" id="directory-select"><i data-lucide="folder-check"></i><span>选择当前目录</span></button></div>
+    </form>
+  </dialog>
+
+  <dialog id="clone-dialog" class="dialog">
+    <form method="dialog">
+      <div class="dialog-header"><div><span class="dialog-icon"><i data-lucide="copy-plus"></i></span><div><h2>克隆远程仓库</h2><p>在本地创建新的项目目录</p></div></div><button class="icon-button" value="cancel" title="关闭"><i data-lucide="x"></i></button></div>
+      <div class="dialog-body"><label>远程仓库地址</label><input id="clone-url" type="text" spellcheck="false" placeholder="https://github.com/user/repository.git"><div class="clone-location"><label>保存到</label><div class="inline-field"><input id="clone-root" type="text" spellcheck="false" placeholder="选择保存位置"><button class="icon-button bordered" id="pick-clone-root" type="button" title="选择保存位置"><i data-lucide="folder-search-2"></i></button></div></div><div class="clone-folder"><label>目录名称</label><input id="clone-folder" type="text" placeholder="repository"></div></div>
+      <div class="dialog-footer"><button class="secondary-button" value="cancel">取消</button><button class="primary-button" value="default" id="clone-submit"><i data-lucide="download"></i><span>开始克隆</span></button></div>
+    </form>
+  </dialog>
+
+  <dialog id="force-dialog" class="dialog warning-dialog">
+    <form method="dialog">
+      <div class="dialog-header"><div><span class="dialog-icon warning"><i data-lucide="triangle-alert"></i></span><div><h2>覆盖远程分支</h2><p id="force-target">本地分支将替换远端内容</p></div></div><button class="icon-button" value="cancel" title="关闭"><i data-lucide="x"></i></button></div>
+      <div class="dialog-body"><div class="warning-copy">系统会先获取远端最新状态，再执行 <code>--force-with-lease</code>。远端已有但本地没有的提交将被移除。</div><label>输入 <strong>OVERWRITE</strong> 继续</label><input id="force-confirmation" type="text" autocomplete="off" placeholder="OVERWRITE"></div>
+      <div class="dialog-footer"><button class="secondary-button" value="cancel">取消</button><button class="danger-button" value="default" id="force-submit"><i data-lucide="cloud-upload"></i><span>确认覆盖</span></button></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+  <div id="notification-stack" class="notification-stack" aria-live="assertive"></div>
+  <div id="busy-indicator" class="busy-indicator" role="status"><span></span><strong id="busy-text">正在处理…</strong></div>
+  <script type="module" src="/assets/app.js"></script>
+</body>
+</html>
