@@ -13,7 +13,11 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand"><span class="brand-mark"><img src="/assets/logo.svg" alt=""></span><div><strong>Git Publish Studio</strong><span>LOCAL REPOSITORY CONSOLE</span></div></div>
-      <div class="runtime"><span class="runtime-dot"></span><span id="git-version">正在检查 Git</span></div>
+      <div class="topbar-actions">
+        <div class="runtime"><span class="runtime-dot"></span><span id="git-version">正在检查 Git</span></div>
+        <a class="topbar-link" href="https://github.com/lrlicn/git-publish-studio" target="_blank" rel="noopener" title="查看开源仓库"><i data-lucide="github"></i></a>
+        <button class="topbar-link" id="open-about" title="关于本工具"><i data-lucide="circle-help"></i></button>
+      </div>
     </header>
 
     <aside class="sidebar">
@@ -121,7 +125,29 @@
       <button class="console-heading" id="toggle-console"><span><i data-lucide="terminal-square"></i>操作输出</span><i data-lucide="chevron-up" id="console-chevron"></i></button>
       <pre id="console-output">等待操作…</pre>
     </section>
+
+    <footer class="app-footer">
+      <div class="footer-copy">© 2026 lrlicn · 在本机运行的 Git 提交、同步与克隆工作台 · 数据不出本机</div>
+      <div class="footer-links"><span class="footer-version">v0.1.0</span><a href="https://github.com/lrlicn/git-publish-studio" target="_blank" rel="noopener">开源仓库</a><a href="#" id="footer-about">关于</a></div>
+    </footer>
   </div>
+
+  <dialog id="about-dialog" class="dialog">
+    <form method="dialog">
+      <div class="dialog-header"><div><span class="dialog-icon"><img src="/assets/logo.svg" alt=""></span><div><h2>关于 Git Publish Studio</h2><p>在本机运行的 Git 提交、同步与克隆工作台</p></div></div><button class="icon-button" value="cancel" title="关闭"><i data-lucide="x"></i></button></div>
+      <div class="dialog-body about-body">
+        <div class="about-grid">
+          <div class="about-block"><h3>只在本地运行</h3><p>服务仅监听 <code>127.0.0.1</code>，并通过随机会话令牌校验每个请求。你的仓库内容、凭据与操作记录都不会离开这台电脑，也不会向任何云端上传。</p></div>
+          <div class="about-block"><h3>运行环境</h3><p>需要本机已安装 <code>git</code> 与 <code>Node.js</code>，支持 Windows、macOS 与 Linux。</p></div>
+        </div>
+        <div class="about-meta"><span>版本 v0.1.0</span><span>开源 · MIT 许可</span></div>
+      </div>
+      <div class="dialog-footer about-footer">
+        <a class="primary-button" href="https://github.com/lrlicn/git-publish-studio" target="_blank" rel="noopener"><i data-lucide="github"></i><span>访问开源仓库</span></a>
+        <button class="secondary-button" value="cancel">关闭</button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="clear-recents-dialog" class="dialog warning-dialog">
     <form method="dialog">

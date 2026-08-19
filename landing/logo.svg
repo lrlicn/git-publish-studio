@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Git Publish Studio">
+  <defs>
+    <linearGradient id="flow" x1="7" y1="40" x2="41" y2="8" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A9A9AA"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <path d="M12 36V14m0 10h10c7.2 0 13-5.8 13-13" fill="none" stroke="url(#flow)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M22 24h5c5 0 9 4 9 9v3" fill="none" stroke="#77787B" stroke-width="2.4" stroke-linecap="round"/>
+  <g fill="#1A1B1E" stroke="url(#flow)" stroke-width="2.6" filter="url(#glow)">
+    <circle cx="12" cy="12" r="4"/>
+    <circle cx="12" cy="36" r="4"/>
+    <circle cx="36" cy="10" r="4"/>
+  </g>
+  <path d="M32 35h8m0 0-3-3m3 3-3 3" fill="none" stroke="#E2E2E2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git Publish Studio · 在本机运行的 Git 工作台</title>
+  <meta name="description" content="一款仅在本机运行的轻量级 Git 提交、同步和克隆工作台。无需命令行，数据不出本机。">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- 导航 -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark"><img src="logo.svg" alt=""></span>
+      <strong>Git Publish Studio</strong>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">功能</a>
+      <a href="#workflow">工作流</a>
+      <a href="#install">快速开始</a>
+      <a class="gh-button" href="https://github.com/lrlicn/git-publish-studio" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-1 .4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0C17.5 5 18.5 5.3 18.5 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6a11.5 11.5 0 0 0 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- Hero：左文右终端 -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-grid">
+      <div class="hero-inner">
+        <span class="hero-badge">LOCAL REPOSITORY CONSOLE</span>
+        <h1>不敲命令<br>也能优雅地<span class="grad-text">提交、同步与克隆</span></h1>
+        <p>一款仅在本机运行的 Git 工作台。用图形化流水线完成暂存、提交、拉取与推送，敏感文件与大文件自动提醒，全程数据不出本机。</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="https://github.com/lrlicn/git-publish-studio" target="_blank" rel="noopener">查看开源仓库</a>
+          <a class="btn ghost" href="#install">本地快速开始</a>
+        </div>
+        <div class="hero-meta">
+          <span>跨平台 · Win / macOS / Linux</span>
+          <span>零云服务依赖</span>
+          <span>开源 · MIT</span>
+        </div>
+      </div>
+      <div class="hero-terminal" aria-label="终端演示">
+        <div class="term-window">
+          <div class="term-bar"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span><div class="term-title">Git Publish Studio — 127.0.0.1:4399</div></div>
+          <div class="term-tabs"><span class="term-tab active">一键使用</span><span class="term-tab">源码安装</span><span class="term-copy">复制</span></div>
+          <div class="term-body">
+            <div class="term-line"><span class="term-prompt">$</span><span id="type-line"></span><span class="term-cursor"></span></div>
+            <div class="term-output">服务器已启动，请在浏览器打开：</div>
+            <div class="term-url">http://127.0.0.1:4399</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 界面预览 mockup -->
+  <section class="mockup-section">
+    <div class="mockup-window">
+      <div class="mockup-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <div class="mockup-title">Git Publish Studio — 127.0.0.1:4399</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mock-side">
+          <div class="mock-nav-item active"></div>
+          <div class="mock-nav-item"></div>
+          <div class="mock-nav-item"></div>
+          <div class="mock-clone-btn"></div>
+        </div>
+        <div class="mock-main">
+          <div class="mock-row"><div class="mock-input"></div><div class="mock-btn-sm"></div><div class="mock-btn-sm"></div></div>
+          <div class="mock-steps">
+            <span class="step done">准备</span><i></i>
+            <span class="step done">暂存</span><i></i>
+            <span class="step on">提交</span><i></i>
+            <span class="step">同步</span>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card"><div class="line w60"></div><div class="line w90"></div><div class="line w75"></div><div class="line w80"></div><div class="line w50"></div></div>
+            <div class="mock-card tall"><div class="line w50"></div><div class="btn small"></div><div class="line w85"></div><div class="line w40"></div><div class="line w70"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="section">
+    <div class="section-head">
+      <span class="eyebrow">FEATURES</span>
+      <h2>为你把关，也让你省心</h2>
+      <p>把零散的命令行封装成清晰的四步流水线，并内置一套安全护栏。</p>
+    </div>
+    <div class="feature-grid">
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/></svg></span>
+        <h3>只在本地运行</h3>
+        <p>服务仅监听 127.0.0.1，不向局域网开放，仓库与记录都不离开你的电脑。</p>
+      </article>
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M6 12h12M10 18h8"/></svg></span>
+        <h3>可视化四步流水线</h3>
+        <p>准备 → 暂存 → 提交 → 同步，引导式完成每一次发布，无需记忆命令。</p>
+      </article>
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h9M4 6h.01M4 12h.01M4 18h.01"/></svg></span>
+        <h3>操作输出全可见</h3>
+        <p>所有 Git 操作输出都展示在界面内，配合中文说明更容易理解每一步发生了什么。</p>
+      </article>
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3 8.5-8 10-5-1.5-8-5.5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <h3>敏感与超大文件提醒</h3>
+        <p>暂存前自动识别疑似密钥、凭据与接近 100MB 的大文件，防止误提交。</p>
+      </article>
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 17l-4 4 4-4zM8 17a4 4 0 0 1 0-8"/><circle cx="16" cy="16" r="3"/><path d="M5 9a4 4 0 0 1 0-6"/></svg></span>
+        <h3>冲突与变基引导</h3>
+        <p>遇到合并冲突与变基中断时，提供可读的修复建议与继续操作，不再手足无措。</p>
+      </article>
+      <article class="feature">
+        <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg></span>
+        <h3>内置目录浏览器</h3>
+        <p>选择任意盘符与文件夹，不限制工作目录，也无须额外的系统选择器组件。</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Workflow -->
+  <section id="workflow" class="section alt">
+    <div class="section-head">
+      <span class="eyebrow">WORKFLOW</span>
+      <h2>一次发布，四步搞定</h2>
+      <p>从打开项目到推送到远端，全程无需离开键盘，也无需打开终端。</p>
+    </div>
+    <ol class="timeline">
+      <li><span class="step-no">01</span><div><h3>准备</h3><p>选择或克隆仓库，配置提交身份与远端地址。</p></div></li>
+      <li><span class="step-no">02</span><div><h3>暂存</h3><p>浏览文件变更，确认风险项后一键暂存。</p></div></li>
+      <li><span class="step-no">03</span><div><h3>提交</h3><p>填写规范提交说明，提交前可查看 Diff 校对。</p></div></li>
+      <li><span class="step-no">04</span><div><h3>同步</h3><p>获取、拉取并变基、推送，安全地覆盖远程分支。</p></div></li>
+    </ol>
+  </section>
+
+  <!-- Install -->
+  <section id="install" class="section">
+    <div class="section-head">
+      <span class="eyebrow">GET STARTED</span>
+      <h2>快速开始</h2>
+      <p>需要本机已安装 git 与 Node.js。三步即可运行这款本地工作台。</p>
+    </div>
+    <div class="install-cards">
+      <div class="install-card">
+        <span class="mini">1</span>
+        <h3>下载源码</h3>
+        <p>从开源仓库获取或克隆本项目。</p>
+        <div class="code"><pre><code>git clone https://github.com/lrlicn/git-publish-studio.git
+cd git-publish-studio</code></pre></div>
+      </div>
+      <div class="install-card">
+        <span class="mini">2</span>
+        <h3>安装依赖</h3>
+        <p>仅需一个轻量依赖。</p>
+        <div class="code"><pre><code>npm install</code></pre></div>
+      </div>
+      <div class="install-card">
+        <span class="mini">3</span>
+        <h3>启动</h3>
+        <p>打开终端提示的本机地址即可。</p>
+        <div class="code"><pre><code>npm start</code></pre></div>
+      </div>
+    </div>
+    <div class="cta">
+      <p>开始你的第一次图形化 Git 发布。</p>
+      <a class="btn primary" href="https://github.com/lrlicn/git-publish-studio" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-1 .4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0C17.5 5 18.5 5.3 18.5 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.2 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6a11.5 11.5 0 0 0 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+        <span>前往 GitHub 开源仓库</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="logo.svg" alt="Git Publish Studio">
+      <div><strong>Git Publish Studio</strong><span>在本机运行的 Git 提交、同步与克隆工作台</span></div>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/lrlicn/git-publish-studio" target="_blank" rel="noopener">GitHub 仓库</a>
+      <a href="https://github.com/lrlicn" target="_blank" rel="noopener">@lrlicn</a>
+      <a href="https://github.com/lrlicn/git-publish-studio/issues" target="_blank" rel="noopener">问题反馈</a>
+    </div>
+    <div class="footer-copy">© <span class="year"></span> lrlicn · 开源项目，采用 MIT 许可 · 数据仅在 127.0.0.1 本地运行</div>
+  </div>
+</footer>
+
+<script>
+  document.querySelector('.year').textContent = new Date().getFullYear()
+
+  // ---- 滚动渐入（每次进入视口重播） ----
+  const revealTargets = document.querySelectorAll('.section-head, .feature, .timeline li, .install-card, .cta, .mockup-window, .hero-terminal')
+  revealTargets.forEach((el, i) => {
+    el.classList.add('reveal') // 初始隐藏态，进入视口才显示
+    el.style.transitionDelay = (i % 4) * 80 + 'ms'
+  })
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in-view') }
+      else { e.target.classList.remove('in-view') } // 离开视口时隐藏，回去再次触发动画
+    })
+  }, { threshold: .15 })
+  revealTargets.forEach(el => io.observe(el))
+
+  // ---- 滚动进度条 + 滚动视差 + 滚动驱动英雄区 ---- 
+  const progressBar = document.createElement('div')
+  progressBar.className = 'scroll-progress'
+  document.body.appendChild(progressBar)
+
+  const heroGrid = document.querySelector('.hero-grid')
+  const heroGlow = document.querySelector('.hero-glow')
+  let ticking = false
+
+  const onScroll = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight
+    const p = max > 0 ? window.scrollY / max : 0
+    progressBar.style.transform = 'scaleX(' + p + ')'
+
+    // 英雄区：随滚动上移并淡出（滚动驱动）
+    if (window.scrollY < window.innerHeight) {
+      heroGrid.style.transform = 'translateY(' + window.scrollY * 0.18 + 'px)'
+      heroGrid.style.opacity = Math.max(0, 1 - window.scrollY / (window.innerHeight * 0.9))
+      // 视差：光晕比正文移动更慢，形成纵深
+      heroGlow.style.transform = 'translateX(-50%) translateY(' + window.scrollY * 0.05 + 'px)'
+    }
+    ticking = false
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(onScroll); ticking = true }
+  })
+  onScroll()
+
+  // ---- 终端打字动画 ----
+  const cmd = 'npm start'
+  const typeEl = document.getElementById('type-line')
+  let n = 0
+  const timer = setInterval(() => {
+    if (n <= cmd.length) { typeEl.textContent = cmd.slice(0, n); n++ }
+    else clearInterval(timer)
+  }, 90)
+</script>
+</body>
+</html>

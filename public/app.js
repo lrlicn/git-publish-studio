@@ -62,6 +62,8 @@ function bindEvents() {
   elements['open-diff'].addEventListener('click', openDiffWindow)
   elements['open-conflict-diff'].addEventListener('click', openDiffWindow)
   elements['open-message-presets'].addEventListener('click', () => elements['commit-presets-dialog'].showModal())
+  elements['open-about'].addEventListener('click', () => elements['about-dialog'].showModal())
+  elements['footer-about'].addEventListener('click', event => { event.preventDefault(); elements['about-dialog'].showModal() })
   document.querySelectorAll('.commit-preset').forEach(button => button.addEventListener('click', () => applyCommitPreset(button.dataset.prefix)))
   elements['workflow-next'].addEventListener('click', handleWorkflowNext)
   elements['clear-recents'].addEventListener('click', () => {

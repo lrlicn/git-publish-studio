@@ -48,6 +48,11 @@ h1, h2, p { margin: 0; }
 .brand span:last-child { color: #8fa3ba; font-size: 9px; }
 .runtime { min-height: 31px; padding: 0 11px; border: 1px solid var(--line); border-radius: 999px; background: rgba(7, 20, 36, .3); color: #b7c4d3; font-size: 11px; display: flex; align-items: center; gap: 8px; }
 .runtime-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px rgba(142, 217, 194, .75); animation: pulse 2.6s ease-in-out infinite; }
+/* 顶栏右侧动作区：Git 版本 / GitHub / 关于 并排显示 */
+.topbar-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.topbar-link { width: 34px; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 999px; background: rgba(7, 20, 36, .3); color: #9fb1c4; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; transition: border-color .15s, color .15s, background .15s; }
+.topbar-link:hover { border-color: var(--line-strong); background: rgba(255,255,255,.06); color: #fff; }
+.topbar-link svg { width: 16px; height: 16px; }
 @keyframes pulse { 50% { opacity: .55; box-shadow: 0 0 4px rgba(142, 217, 194, .35); } }
 .sidebar { grid-row: 2; position: sticky; top: 68px; height: calc(100vh - 68px); padding: 18px 12px; border-right: 1px solid var(--line); background: rgba(12, 28, 48, .7); backdrop-filter: blur(20px); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 12px; }
 .sidebar-heading { padding: 0 8px; color: #8799ad; font-size: 10px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between; }
